@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Button from "../UI/Button";
 import Card from "../UI/Card";
 import ErrorModal from "../UI/ErrorModal";
@@ -6,17 +6,23 @@ import Wrapper from "../Helpers/Wrapper";
 import styles from "./AddUser.module.css";
 
 const AddUser = ({ onAddUser }) => {
-  const [enteredUsername, setEnteredUsername] = useState("");
-  const [enteredAge, setEnteredAge] = useState("");
+  const nameInputRef = useRef();
+  const ageInputRef = useRef();
+
+  // remove useState and replaced with useRef because useState
+  // listens to every key stroke and useRef listens to the final value
+  // const [enteredUsername, setEnteredUsername] = useState("");
+  // const [enteredAge, setEnteredAge] = useState("");
   const [error, setError] = useState();
 
-  const usernameChangeHandler = (e) => {
-    setEnteredUsername(e.target.value);
-  };
+  // No longer needed because of useRef
+  // const usernameChangeHandler = (e) => {
+  //   setEnteredUsername(e.target.value);
+  // };
 
-  const ageChangeHandler = (e) => {
-    setEnteredAge(e.target.value);
-  };
+  // const ageChangeHandler = (e) => {
+  //   setEnteredAge(e.target.value);
+  // };
 
   const errorHandler = () => {
     setError(null);
@@ -25,7 +31,11 @@ const AddUser = ({ onAddUser }) => {
   const addUserHandler = (e) => {
     e.preventDefault();
 
-    if (enteredUsername.trim().length === 0 || enteredAge.trim().length === 0) {
+    const enteredName = nameInputRef.current.value;
+    const enteredUserAge = ageInputRef.current.value;
+
+    // replaced useState values with useRef values
+    if (enteredName.trim().length === 0 || enteredUserAge.trim().length === 0) {
       setError({
         title: "Invalid input",
         message: "Please enter a valid name and age (non-empty values)."
@@ -34,7 +44,7 @@ const AddUser = ({ onAddUser }) => {
     }
 
     // adding the + ensures the string is a number
-    if (+enteredAge < 1) {
+    if (+enteredUserAge < 1) {
       setError({
         title: "Invalid age",
         message: "Please enter a valid age (> 0)."
@@ -42,9 +52,12 @@ const AddUser = ({ onAddUser }) => {
       return;
     }
 
-    onAddUser(enteredUsername, enteredAge);
-    setEnteredUsername('');
-    setEnteredAge('');
+    // replace useState values with useRef values
+    onAddUser(enteredName, enteredUserAge);
+    nameInputRef.current.value = '';
+    ageInputRef.current.value = '';
+    // setEnteredUsername('');
+    // setEnteredAge('');
   };
 
   return (
@@ -56,15 +69,17 @@ const AddUser = ({ onAddUser }) => {
           <input
             id="username"
             type="text"
-            onChange={usernameChangeHandler}
-            value={enteredUsername}
+            // onChange={usernameChangeHandler}
+            // value={enteredUsername}
+            ref={nameInputRef}
           />
           <label htmlFor="age">Age</label>
           <input
             id="age"
             type="number"
-            onChange={ageChangeHandler}
-            value={enteredAge}
+            // onChange={ageChangeHandler}
+            // value={enteredAge}
+            ref={ageInputRef}
           />
           <Button type="submit">Add User</Button>
         </form>
